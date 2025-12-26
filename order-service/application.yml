@@ -3,8 +3,9 @@ resilience4j:
     instances:
       paymentServiceCB:
         registerHealthIndicator: true
-        slidingWindowSize: 5 #Look at last 5 calls
+        slidingWindowSize: 3 #Look at last 5 calls
         minimumNumberOfCalls: 3 #Don’t judge too early
         failureRateThreshold: 50 #If ≥50% fail → OPEN
         waitDurationInOpenState: 10s #Stay OPEN for 10 sec
         permittedNumberOfCallsInHalfOpenState: 2 #Test with 2 calls
+        automaticTransitionFromOpenToHalfOpenEnabled: true

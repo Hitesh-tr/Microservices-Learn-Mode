@@ -1,8 +1,8 @@
 package com.order_management_system.order_service.service;
 
-import com.order_management_system.order_service.dto.OrderRequest;
 import com.order_management_system.order_service.dto.PaymentRequest;
 import com.order_management_system.order_service.dto.PaymentResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -15,18 +15,14 @@ public class OrderService {
         this.restTemplate = restTemplate;
     }
 
+    @CircuitBreaker(
+        name = "paymentServiceCB",
+        fallbackMethod = "paymentFallback"
+    )
     public String placeOrder(){
         PaymentRequest paymentRequest = new PaymentRequest(10L, 122);
-        try{
-            return callPayment(paymentRequest);
-        } catch (ResourceAccessException ex){
-            //retry once
-            try{
-                return callPayment(paymentRequest);
-            }catch (ResourceAccessException retryEx) {
-                return "PAYMENT_SERVICE_UNAVAILABLE_PLEASE_TRY_LATER";
-            }
-        }
+
+        return callPayment(paymentRequest);
     }
 
     private String callPayment(PaymentRequest paymentRequest){
@@ -37,5 +33,10 @@ public class OrderService {
         );
 
         return "ORDER_PLACED_WITH_TXN_" + response.getTransactionId();
+    }
+
+    // Fallback must match method signature + Exception
+    public String paymentFallback(Exception ex) {
+        return "PAYMENT_SERVICE_UNAVAILABLE_CIRCUIT_OPEN";
     }
 }
