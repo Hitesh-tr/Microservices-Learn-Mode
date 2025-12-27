@@ -9,3 +9,11 @@ resilience4j:
         waitDurationInOpenState: 10s #Stay OPEN for 10 sec
         permittedNumberOfCallsInHalfOpenState: 2 #Test with 2 calls
         automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  retry:
+    instances:
+      paymentServiceRetry:
+        maxAttempts: 2
+        waitDuration: 500ms
+        retryExceptions:
+          - org.springframework.web.client.ResourceAccessException
