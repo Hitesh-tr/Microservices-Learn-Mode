@@ -1,5 +1,6 @@
 package com.order_management_system.order_service.service;
 
+import com.order_management_system.order_service.client.PaymentClient;
 import com.order_management_system.order_service.dto.PaymentRequest;
 import com.order_management_system.order_service.dto.PaymentResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -11,9 +12,11 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class OrderService {
     private final RestTemplate restTemplate;
+    private final PaymentClient paymentClient;
 
-    public OrderService(RestTemplate restTemplate) {
+    public OrderService(RestTemplate restTemplate, PaymentClient paymentClient) {
         this.restTemplate = restTemplate;
+        this.paymentClient = paymentClient;
     }
 
     @CircuitBreaker(
@@ -24,23 +27,21 @@ public class OrderService {
         name = "paymentServiceRetry"
     )
     public String placeOrder(){
-        PaymentRequest paymentRequest = new PaymentRequest(10L, 122);
+        PaymentRequest paymentRequest =
+            new PaymentRequest(10L, 122);
 
         return callPayment(paymentRequest);
     }
 
     private String callPayment(PaymentRequest paymentRequest){
-        PaymentResponse response = restTemplate.postForObject(
-            "http://localhost:8082/payments",
-            paymentRequest,
-            PaymentResponse.class
-        );
+        PaymentResponse response =
+            paymentClient.makePayment(paymentRequest);
 
         return "ORDER_PLACED_WITH_TXN_" + response.getTransactionId();
     }
 
     public String paymentCircuitFallback(Exception ex) {
-        return "PAYMENT_SERVICE_TEMPORARILY_UNAVAILABLE";
+        return "PAYMENT_SERVICE_UNAVAILABLE_FEIGN";
     }
 
     // Fallback must match method signature + Exception
