@@ -82,3 +82,8 @@ Thumbs.db
 *~
 *.swp
 *.tmp
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd

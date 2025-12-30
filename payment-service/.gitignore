@@ -19,6 +19,15 @@ target/
 *.iml
 *.ipr
 
+# IntelliJ IDEA (all services)
+**/.idea/
+**/*.iml
+
+# Maven Wrapper (all services)
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

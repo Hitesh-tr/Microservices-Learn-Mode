@@ -1,17 +1,18 @@
 spring:
+  application:
+    name: api-gateway
+
   cloud:
     gateway:
-      server:
-        webflux:
-          routes:
-            - id: order-service-route
-              uri: http://localhost:8081
-              predicates:
-                - Path=/orders/**
-                - Path=/orders
+      routes:
+        - id: order-service-route
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+            - Path=/orders
 
-            - id: payment-service-route
-              uri: http://localhost:8082
-              predicates:
-                - Path=/payments/**
-                - Path=/payments
+        - id: payment-service-route
+          uri: lb://payment-service
+          predicates:
+            - Path=/payments/**
+            - Path=/payments
