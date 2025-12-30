@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: order-service-route
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/orders/**
+                - Path=/orders
+
+            - id: payment-service-route
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/payments/**
+                - Path=/payments
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
