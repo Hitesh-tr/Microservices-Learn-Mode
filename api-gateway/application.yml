@@ -2,17 +2,5 @@ spring:
   application:
     name: api-gateway
 
-  cloud:
-    gateway:
-      routes:
-        - id: order-service-route
-          uri: lb://order-service
-          predicates:
-            - Path=/orders/**
-            - Path=/orders
-
-        - id: payment-service-route
-          uri: lb://payment-service
-          predicates:
-            - Path=/payments/**
-            - Path=/payments
+  config:
+    import: optional:configserver:http://localhost:8888
